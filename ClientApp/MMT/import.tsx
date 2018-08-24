@@ -1,12 +1,12 @@
 ﻿import * as React from "react";
-import { IImportProps } from "../interfaces/IImport";
+import { IImportProps } from "./interfaces/IImport";
 
 
 
 export default class ImportMilestones extends React.Component<IImportProps, {}> {
 
     constructor(props: IImportProps) {
-        super(props)
+        super(props);
         this.onImport = this.onImport.bind(this);
 
     }

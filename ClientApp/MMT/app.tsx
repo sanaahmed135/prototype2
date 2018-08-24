@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
-import Auswahl from "../app/MMT/auswahl";
-import OverView from "../app/MMT/overview";
+import Auswahl from "./auswahl";
+import OverView from "./overview";
 
  interface IState {
     value : string;
@@ -16,13 +16,13 @@ export default class MMT extends React.Component<any,IState> {
         this.callback = this.callback.bind(this);
     }
     public render():any {
-        const arr : string[]= ["Proj 1","Proj 2", "Proj 3"];
+        const arr : string[]= ["Proj 1","Proj 2", "Proj 3","Proj 4"];
         return (
-            <div>
+            <div>Hello World
                 <Auswahl collection = {arr} onAuswahl={this.callback}/>
                 <br/>
-                {/* <button onClick={this.onClickEvent}> Show Me Selected Project</button> */}
-                <div>{this.state.value}</div>
+                <button onClick={this.onClickEvent}> Show Me Selected Project</button>
+                {/* <div>{this.state.value}</div> */}
                 <OverView/>
             </div>
         );

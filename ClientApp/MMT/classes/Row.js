@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var Row = (function () {
+var Row = /** @class */ (function () {
     function Row(_id, _title, _complete) {
         this.id = _id;
         this.task = _title;
@@ -9,4 +9,3 @@ var Row = (function () {
     return Row;
 }());
 exports.default = Row;
-//# sourceMappingURL=Row.js.map

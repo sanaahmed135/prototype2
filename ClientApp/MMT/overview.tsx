@@ -1,7 +1,7 @@
 ﻿import * as React from "react";
 import ReactGrid from "react-data-grid";
-import Column from "../classes/Column";
-import Row from "../classes/Row";
+import Column from "./classes/Column";
+import Row from "./classes/Row";
 
 export default class Overview extends React.Component<any, IMyState> {
     private columns: Array<Column> = new Array<Column> ();
@@ -30,7 +30,7 @@ export default class Overview extends React.Component<any, IMyState> {
 
     private getRowbyIndex = (index: number): Row => {
         return this.state.rows[index];
-    };
+    }
 
     private createColumns(): void {
         this.columns.push(new Column("id", "ID"));

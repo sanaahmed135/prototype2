@@ -1,9 +1,8 @@
-
 var path = require("path");
 
 var config = {
 
-    entry: { 'main': './src/app/App.tsx' },
+    entry: { 'main': './ClientApp/main.tsx' },
     resolve: { extensions: ['.js', '.jsx', '.ts', '.tsx'] },
 
 
@@ -20,7 +19,7 @@ var config = {
       {
 
         test: /\.tsx?$/,
-        loader: "ts-loader",
+        loader: require.resolve('ts-loader'),
         exclude: /node_modules/
       }
     ]

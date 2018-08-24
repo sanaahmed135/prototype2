@@ -1,13 +1,13 @@
 ﻿import * as React from "react";
-import { IAuswahlProps } from "../interfaces/IAuswahl";
+import { IAuswahlProps } from "./interfaces/IAuswahl";
 
 
 export default class Auswahl extends React.Component<IAuswahlProps,{}> {
-    
+
     constructor(props : IAuswahlProps) {
-        super(props)
+        super(props);
         this.onSelection = this.onSelection.bind(this);
-       
+
     }
 
     public render(): React.ReactElement<IAuswahlProps> {

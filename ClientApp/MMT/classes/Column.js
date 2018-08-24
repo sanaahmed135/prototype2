@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var Column = (function () {
+var Column = /** @class */ (function () {
     function Column(_key, _name) {
         this.width = 50;
         this.key = _key;
@@ -11,4 +11,3 @@ var Column = (function () {
     return Column;
 }());
 exports.default = Column;
-//# sourceMappingURL=Column.js.map
