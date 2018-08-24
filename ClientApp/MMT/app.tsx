@@ -15,15 +15,16 @@ export default class MMT extends React.Component<any,IState> {
         this.onClickEvent = this.onClickEvent.bind(this);
         this.callback = this.callback.bind(this);
     }
+
     public render():any {
         const arr : string[]= ["Proj 1","Proj 2", "Proj 3","Proj 4"];
         return (
-            <div>Hello World
+            <div>
                 <Auswahl collection = {arr} onAuswahl={this.callback}/>
                 <br/>
-                <button onClick={this.onClickEvent}> Show Me Selected Project</button>
+                {/* <button onClick={this.onClickEvent}> Show Me Selected Project</button> */}
                 {/* <div>{this.state.value}</div> */}
-                <OverView/>
+                <OverView projects={arr}/>
             </div>
         );
     }

@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import { IAuswahlProps } from "./interfaces/IAuswahl";
+import { IAuswahlProps } from "./Interfaces/IAuswahl";
 
 
 export default class Auswahl extends React.Component<IAuswahlProps,{}> {
