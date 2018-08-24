@@ -1,0 +1,16 @@
+{
+  "name": "clientapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "App.tsx",
+  "scripts": {
+    "build": "./node_modules/.bin/webpack",
+    "start": "npm run build && node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/react-data-grid": "^2.0.13",
+    "react-data-grid": "^4.0.8"
+  }
+}
