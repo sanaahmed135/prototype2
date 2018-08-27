@@ -62,10 +62,9 @@ export default class MMT extends React.Component<any,IState> {
     private callback(selectedProjectId : string): void {
         // let selectedProject : Project = this.projList.find(x => x.id === selectedProjectId);
        console.log(selectedProjectId);
-        let tasksForSelectedProject : Array<Task> = this.tasks.filter((t)=> t.projectId === selectedProjectId);      
-          console.log(tasksForSelectedProject);
-       this.setState({tasks : tasksForSelectedProject});
-          
+        let tasksForSelectedProject : Array<Task> = this.tasks.filter((t)=> t.projectId === selectedProjectId);
+        console.log(tasksForSelectedProject);
+        this.setState({tasks : tasksForSelectedProject});
       }
   
       private onClickEvent( e: any): void {

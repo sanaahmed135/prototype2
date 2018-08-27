@@ -14,13 +14,13 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
     constructor(props: any, context: any) {
         super(props, context);
         this.createColumns();
-        console.log(this.props.tasks);
+        console.log(this.props.tasks );
         this.getRows=this.getRows.bind(this);
         this.state = { rows: this.getRows(this.props.tasks.length)};
     }
 
-    render() {
-        return (
+    render(): any {
+        return (//<div></div>
         //     <ul>
         //        { this.props.tasks.map((task,index)=> {
         //                 return (<li>{task.name}</li>);
@@ -28,7 +28,6 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
         //         }
         //    </ul>
             <ReactGrid
-            enableCellSelect={true}
             columns={this.columns}
             rowGetter={this.getRowbyIndex}
             rowsCount={this.state.rows.length}
@@ -55,16 +54,17 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
         const rows: Array<Row>  = new Array<Row> ();
         for (let id: number = 0; id < numberOfRows; id++) {
 
-            let type:string = ["Evaluation", "Prototype", "Initial-Batch",
-            "Serial-Release","Project Specific", "Stipulation"][Math.floor((Math.random() * 3) + 1)];
-            let status:string = ["Active", "Closed", "Removed"][Math.floor((Math.random() * 3) + 1)];
+             let type:string = ["Evaluation", "Prototype", "Initial-Batch",
+             "Serial-Release","Project Specific", "Stipulation"][Math.floor((Math.random() * 5) + 1)];
+            let status:string = ["Active", "Closed", "Removed"][Math.floor((Math.random() * 2) + 1)];
             let rDate :Date = this.randomDate(new Date(2012, 0, 1), new Date());
-            let linkedTask : string = ["40 | Release 1.0 Prototype" , "100 | EoP" ,
-             "145 | v1.2 Stipulation" , "173 | Release 1.3 Prototype" , "189 | Initial-Batch"
-             , "203 | Release 1.3 Serial Release" , "226 | Release 1.4 Prototype"][Math.floor((Math.random() * 3) + 1)];
-            let task : Task  = this.props.tasks[id];
-            const row: Row = new Row( id , task.name ,rDate , type , status , linkedTask );
-            // const row: Row = new Row(id ,task.name);
+             let linkedTask : string = ["40 | Release 1.0 Prototype" , "100 | EoP" ,
+            "145 | v1.2 Stipulation" , "173 | Release 1.3 Prototype" , "189 | Initial-Batch"
+             , "203 | Release 1.3 Serial Release" , "226 | Release 1.4 Prototype"][Math.floor((Math.random() * 6) + 1)];
+
+             let task : Task  = this.props.tasks[id];
+            const row: Row = new Row( id , task.name ,rDate.toString() , type , status ,linkedTask );
+
             rows.push(row);
 
         }
