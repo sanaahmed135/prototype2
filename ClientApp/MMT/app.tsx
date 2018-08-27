@@ -17,7 +17,6 @@ export default class MMT extends React.Component<any,IState> {
         super(props);
         this.projList = this.getProjects();
         this.tasks = this.getTasks();
-
       //  this.selectedProject = this.projList[0];
         this.state= {tasks : new Array<Task>() };
 
@@ -50,24 +49,22 @@ export default class MMT extends React.Component<any,IState> {
 
     private getTasks(): Array<Task> {
         let collection : Array<Task> = new Array<Task>();
-        collection.push(new Task("1","Task 1","1"));
-        collection.push(new Task("2","Task 1.1","1"));
-        collection.push(new Task("3","Task 1.2","1"));
-
-        collection.push(new Task("4","Task 2","2"));
-        collection.push(new Task("5","Task 2.1","2"));
-        collection.push(new Task("6","Task 2.2","2"));
+        collection.push(new Task("1","GO/MO: Project Initiation","1"));
+        collection.push(new Task("2","Confirmation","1"));
+        collection.push(new Task("3","Release 1.0 Prototype","1"));
+        collection.push(new Task("4","Release 1.1 Initial-Batch","2"));
+        collection.push(new Task("5","Release 1.1 Prototype","2"));
+        collection.push(new Task("6","Release 1.0 Serial-Release","2"));
 
         return collection;
     }
-
 
     private callback(selectedProjectId : string): void {
       // let selectedProject : Project = this.projList.find(x => x.id === selectedProjectId);
      let tasksForSelectedProject : Array<Task> = this.tasks
                                                 .filter((t)=> t.projectId === selectedProjectId);
-
-    this.setState({tasks : tasksForSelectedProject});
+        this.tasks = tasksForSelectedProject;
+    // this.setState({tasks : tasksForSelectedProject});
         // this.selectedProject = selectedProject;
       //  this.setState({value : this.selectedProject});
     }

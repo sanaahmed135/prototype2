@@ -4,6 +4,7 @@ import Column from "./classes/Column";
 import Row from "./classes/Row";
 import Auswahl from "./auswahl";
 import { IOverviewProps } from "./Interfaces/IOverview";
+import Task from "./classes/task";
 
 export default class Overview extends React.Component<IOverviewProps, IMyState> {
 
@@ -12,9 +13,9 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
     constructor(props: any, context: any) {
         super(props, context);
         this.createColumns();
-        console.log(this.props.tasks);
+        console.log(this.props.tasks+ "Hello");
         this.getRows=this.getRows.bind(this);
-        this.state = { rows: this.getRows(4)};
+        this.state = { rows: this.getRows(this.props.tasks.length)};
     }
 
     render() {
@@ -36,13 +37,17 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
 
     public createColumns(): void {
         this.columns.push(new Column("id", "ID"));
-        this.columns.push(new Column("project", "Project"));
-        // this.columns.push(new Column("complete", "Complete"));
+        this.columns.push(new Column("task", "Task"));
+        this.columns.push(new Column("rDate", "Random Date"));
+        this.columns.push(new Column("type", "Type"));
+        this.columns.push(new Column("status", "Status"));
+        this.columns.push(new Column("linkedTask", "Linked Task"));
+
     }
 
     public getRows(numberOfRows: number): Array<Row>  {
         const rows: Array<Row>  = new Array<Row> ();
-        for (let i: number = 0; i < numberOfRows; i++) {
+        for (let id: number = 0; id < numberOfRows; id++) {
             // const complete: number = Math.min(100, Math.round(Math.random() * 110));
             // create the row object and add it to the array
             let type:string = ["Evaluation", "Prototype", "Initial-Batch",
@@ -52,8 +57,8 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
             let linkedTask : string = ["40 | Release 1.0 Prototype" , "100 | EoP" ,
              "145 | v1.2 Stipulation" , "173 | Release 1.3 Prototype" , "189 | Initial-Batch"
              , "203 | Release 1.3 Serial Release" , "226 | Release 1.4 Prototype"][Math.floor((Math.random() * 3) + 1)];
-            let task :string = this.props.tasks[i].toString();
-            const row: Row = new Row( i , task , rDate , type , status , linkedTask );
+            let task : Task  = this.props.tasks[id];
+            const row: Row = new Row( id , task , rDate , type , status , linkedTask );
             rows.push(row);
         }
         return rows;
