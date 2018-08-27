@@ -5,6 +5,7 @@ import Row from "./classes/Row";
 import Auswahl from "./auswahl";
 import { IOverviewProps } from "./Interfaces/IOverview";
 import Task from "./classes/task";
+import { parse } from "path";
 
 export default class Overview extends React.Component<IOverviewProps, IMyState> {
 
@@ -13,22 +14,27 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
     constructor(props: any, context: any) {
         super(props, context);
         this.createColumns();
-        console.log(this.props.tasks+ "Hello");
+        console.log(this.props.tasks);
         this.getRows=this.getRows.bind(this);
         this.state = { rows: this.getRows(this.props.tasks.length)};
     }
 
     render() {
         return (
-            <div>
-                <ReactGrid
-                    enableCellSelect={true}
-                    columns={this.columns}
-                    rowGetter={this.getRowbyIndex}
-                    rowsCount={this.state.rows.length}
-                    minHeight={500}
-                />
-            </div>);
+        //     <ul>
+        //        { this.props.tasks.map((task,index)=> {
+        //                 return (<li>{task.name}</li>);
+        //         })
+        //         }
+        //    </ul>
+            <ReactGrid
+            enableCellSelect={true}
+            columns={this.columns}
+            rowGetter={this.getRowbyIndex}
+            rowsCount={this.state.rows.length}
+            minHeight={500}
+            />
+            );
     }
 
     public getRowbyIndex = (index: number): Row => {
@@ -48,8 +54,7 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
     public getRows(numberOfRows: number): Array<Row>  {
         const rows: Array<Row>  = new Array<Row> ();
         for (let id: number = 0; id < numberOfRows; id++) {
-            // const complete: number = Math.min(100, Math.round(Math.random() * 110));
-            // create the row object and add it to the array
+
             let type:string = ["Evaluation", "Prototype", "Initial-Batch",
             "Serial-Release","Project Specific", "Stipulation"][Math.floor((Math.random() * 3) + 1)];
             let status:string = ["Active", "Closed", "Removed"][Math.floor((Math.random() * 3) + 1)];
@@ -58,8 +63,10 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
              "145 | v1.2 Stipulation" , "173 | Release 1.3 Prototype" , "189 | Initial-Batch"
              , "203 | Release 1.3 Serial Release" , "226 | Release 1.4 Prototype"][Math.floor((Math.random() * 3) + 1)];
             let task : Task  = this.props.tasks[id];
-            const row: Row = new Row( id , task , rDate , type , status , linkedTask );
+            const row: Row = new Row( id , task.name ,rDate , type , status , linkedTask );
+            // const row: Row = new Row(id ,task.name);
             rows.push(row);
+
         }
         return rows;
     }
@@ -71,6 +78,3 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
 interface IMyState {
     rows: Array<Row> ;
 }
-
-
-

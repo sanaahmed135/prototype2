@@ -9,16 +9,16 @@ import Task from "./classes/task";
  }
 
 export default class MMT extends React.Component<any,IState> {
-  //  public selectedProject : Project ;
+    public selectedProject : Project ;
     public projList : Array<Project>;
     public tasks : Array<Task>;
 
     constructor(props : any) {
         super(props);
         this.projList = this.getProjects();
+        this.selectedProject = this.projList[0];
         this.tasks = this.getTasks();
-      //  this.selectedProject = this.projList[0];
-        this.state= {tasks : new Array<Task>() };
+        this.state= {tasks :  this.tasks.filter((t)=> t.projectId === this.selectedProject.id) };
 
         this.onClickEvent = this.onClickEvent.bind(this);
         this.callback = this.callback.bind(this);
@@ -31,7 +31,7 @@ export default class MMT extends React.Component<any,IState> {
                 <br/>
                 {/* <button onClick={this.onClickEvent}> Show Me Selected Project</button> */}
                 {/* <div>{this.state.value}</div> */}
-                 <OverView tasks={this.state.tasks}/>
+                  <OverView tasks={this.state.tasks}/>
             </div>
         );
     }
@@ -60,16 +60,16 @@ export default class MMT extends React.Component<any,IState> {
     }
 
     private callback(selectedProjectId : string): void {
-      // let selectedProject : Project = this.projList.find(x => x.id === selectedProjectId);
-     let tasksForSelectedProject : Array<Task> = this.tasks
-                                                .filter((t)=> t.projectId === selectedProjectId);
-        this.tasks = tasksForSelectedProject;
-    // this.setState({tasks : tasksForSelectedProject});
-        // this.selectedProject = selectedProject;
-      //  this.setState({value : this.selectedProject});
-    }
-
-    private onClickEvent( e: any): void {
-        alert(e.selectedProject);
-    }
+        // let selectedProject : Project = this.projList.find(x => x.id === selectedProjectId);
+       console.log(selectedProjectId);
+        let tasksForSelectedProject : Array<Task> = this.tasks.filter((t)=> t.projectId === selectedProjectId);      
+          console.log(tasksForSelectedProject);
+       this.setState({tasks : tasksForSelectedProject});
+          
+      }
+  
+      private onClickEvent( e: any): void {
+          alert(e.selectedProject);
+      }
+  
 }
