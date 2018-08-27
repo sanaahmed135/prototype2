@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import { IImportProps } from "./interfaces/IImport";
+import { IImportProps } from "./Interfaces/IImport";
 
 
 

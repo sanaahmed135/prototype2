@@ -1,4 +1,6 @@
+import Project from "../classes/project";
+
 export interface IAuswahlProps {
-    collection: string[];
-    onAuswahl : (selectedText : string) => void;
+    collection: Array<Project>;
+    onAuswahl : (selectedProject : string) => void;
   }

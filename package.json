@@ -2,6 +2,7 @@
   "name": "clientapp",
   "scripts": {
     "build": "webpack --mode development",
+    "watch": "webpack --mode development --watch",
     "start": "npm run build"
   },
   "dependencies": {
