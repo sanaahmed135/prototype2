@@ -13,10 +13,9 @@ export default class Auswahl extends React.Component<IAuswahlProps,{}> {
     public render(): React.ReactElement<IAuswahlProps> {
         return (
             <select onChange={this.onSelection} >
-               {/* {this.props.collection.map(this.options)} */}
                {
                    this.props.collection.map((project,index)=> {
-                        return (<option value={project.id} label={project.name}></option>);
+                        return (<option key={index} value={project.id} label={project.id+ " | "+project.name}></option>);
                    })
                }
             </select>

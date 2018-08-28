@@ -1,30 +1,28 @@
 ﻿import * as React from "react";
 import Auswahl from "./auswahl";
 import OverView from "./overview";
-import Project from "./classes/project";
-import Task from "./classes/task";
+import Project from "./models/project";
+import Task from "./models/task";
 
  interface IState {
   tasks : Array<Task>;
  }
 
 export default class MMT extends React.Component<any,IState> {
-    public selectedProject : Project ;
     public projList : Array<Project>;
     public tasks : Array<Task>;
 
     constructor(props : any) {
         super(props);
         this.projList = this.getProjects();
-        this.selectedProject = this.projList[0];
         this.tasks = this.getTasks();
-        this.state= {tasks :  this.tasks.filter((t)=> t.projectId === this.selectedProject.id) };
+        this.state = {tasks : this.filterTaskByProjectId("1")} ;
 
-        this.onClickEvent = this.onClickEvent.bind(this);
+        // this.onClickEvent = this.onClickEvent.bind(this);
         this.callback = this.callback.bind(this);
     }
 
-    public render():any {
+    public render(): any {
         return (
             <div>
                 <Auswahl collection = {this.projList} onAuswahl={this.callback}/>
@@ -35,6 +33,7 @@ export default class MMT extends React.Component<any,IState> {
             </div>
         );
     }
+
     private getProjects(): Array<Project> {
         let collection : Array<Project> = new Array<Project>();
         collection.push(new Project("1","Proj1"));
@@ -46,7 +45,6 @@ export default class MMT extends React.Component<any,IState> {
         return collection;
     }
 
-
     private getTasks(): Array<Task> {
         let collection : Array<Task> = new Array<Task>();
         collection.push(new Task("1","GO/MO: Project Initiation","1"));
@@ -55,20 +53,28 @@ export default class MMT extends React.Component<any,IState> {
         collection.push(new Task("4","Release 1.1 Initial-Batch","2"));
         collection.push(new Task("5","Release 1.1 Prototype","2"));
         collection.push(new Task("6","Release 1.0 Serial-Release","2"));
-
+        collection.push(new Task("7","Release 1.2 Serial-Release","3"));
+        collection.push(new Task("8","Release 1.3 Prototype","3"));
+        collection.push(new Task("9","Release 1.2 Confirmation","3"));
+        collection.push(new Task("10","Release 1.2 Prototype","4"));
+        collection.push(new Task("11","Release 1.0 Confirmation","4"));
+        collection.push(new Task("12","Confirmation","5"));
+        collection.push(new Task("13","Release 1.4 Prototype","5"));
+        collection.push(new Task("14","Release 1.4 Initial-Batch","5"));
         return collection;
     }
 
     private callback(selectedProjectId : string): void {
-        // let selectedProject : Project = this.projList.find(x => x.id === selectedProjectId);
-       console.log(selectedProjectId);
-        let tasksForSelectedProject : Array<Task> = this.tasks.filter((t)=> t.projectId === selectedProjectId);
-        console.log(tasksForSelectedProject);
-        this.setState({tasks : tasksForSelectedProject});
-      }
-  
-      private onClickEvent( e: any): void {
-          alert(e.selectedProject);
-      }
-  
+        this.setState({tasks : this.filterTaskByProjectId(selectedProjectId)});
+    }
+
+    private filterTaskByProjectId(projectId: string): Array<Task> {
+      //  console.log("filterTaskByProjectId called ProjectId : " + projectId);
+      //  console.log(this.tasks.filter((t)=> t.projectId === projectId));
+        return this.tasks.filter((t)=> t.projectId === projectId);
+    }
+
+    private onClickEvent( e: any): void {
+        alert(e.selectedProject);
+    }
 }

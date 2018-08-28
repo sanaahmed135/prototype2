@@ -1,4 +1,4 @@
-import Project from "../classes/project";
+import Project from "../models/project";
 
 export interface IAuswahlProps {
     collection: Array<Project>;

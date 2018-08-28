@@ -1,7 +1,7 @@
 import Task from "./task";
 
 export default class Row {
-    id: number;
+    // id: number;
     task : string;
     rDate : string;
     type : string;
@@ -9,8 +9,8 @@ export default class Row {
     linkedTask : string;
 
 
-     constructor(_id: number , _task : string,_rdate : string,_type: string,_status : string, _linkedTask : string) {
-        this.id = _id;
+     constructor( _task : string,_rdate : string,_type: string,_status : string, _linkedTask : string) {
+        // this.id = _id;
         this.task = _task;
         this.rDate = _rdate;
         this.type = _type;
