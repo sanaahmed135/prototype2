@@ -3,7 +3,7 @@ var path = require("path");
 var config = {
 
     entry: { 'main': './ClientApp/main.tsx' },
-    resolve: { extensions: ['.js', '.jsx', '.ts', '.tsx'] },
+    resolve: { extensions: ['.js', '.jsx', '.ts', '.tsx','.css'] },
 
 
   output: {
@@ -21,6 +21,10 @@ var config = {
         test: /\.tsx?$/,
         loader: require.resolve('ts-loader'),
         exclude: /node_modules/
+      },
+      {
+        test: /\.css$/,
+        use: [  'css-loader' ]
       }
     ]
 

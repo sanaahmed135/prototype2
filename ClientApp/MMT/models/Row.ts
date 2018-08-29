@@ -1,15 +1,17 @@
 import Task from "./task";
+import moment from "moment";
+
 
 export default class Row {
     // id: number;
     task : string;
-    rDate : string;
+    rDate :string;
     type : string;
     status : string;
     linkedTask : string;
 
 
-     constructor( _task : string,_rdate : string,_type: string,_status : string, _linkedTask : string) {
+     constructor( _task : string, _rdate : string, _type: string, _status : string, _linkedTask : string) {
         // this.id = _id;
         this.task = _task;
         this.rDate = _rdate;
