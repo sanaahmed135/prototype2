@@ -6,10 +6,10 @@ import { IOverviewProps } from "./Interfaces/IOverview";
 import Task from "./models/task";
 import { parse } from "path";
 import update from "immutability-helper";
-import { Editors} from "react-data-grid-addons";
+import { Editors,Toolbar} from "react-data-grid-addons";
 const { AutoComplete: AutoCompleteEditor, DropDownEditor } = Editors;
-import DatePicker from "react-datepicker";
 import moment from "moment";
+import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 interface IMyState {
@@ -20,7 +20,6 @@ interface IMyState {
 
 export default class Overview extends React.Component<IOverviewProps, IMyState> {
     private columns: Array<Column> = new Array<Column> ();
-   // private rows : Array<Row> = new Array<Row>();
     private mydate : any = new Date();
 
     constructor(props: any, context: any) {
@@ -51,8 +50,10 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
                 rowsCount={this.state.rows.length}
                 minHeight={500}
                 onGridSort={this.handleGridSort}
+                toolbar={<Toolbar onAddRow={this.handleAddRow}/>}
                 onGridRowsUpdated={this.handleGridRowsUpdated}
                 />
+                {/* <button >Add Tasks</button> */}
             </div>
             );
     }
@@ -73,11 +74,10 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
         let linkedTask : Array<string> = ["40 | Release 1.0 Prototype" , "100 | EoP" , "145 | v1.2 Stipulation" , "173 | Release 1.3 Prototype" , "189 | Initial-Batch",  "203 | Release 1.3 Serial Release" , "226 | Release 1.4 Prototype"];
         // this.columns.push(new Column("id", "ID"));
         this.columns.push(new Column("task", "Name",true,true));
-        this.columns.push(new Column("rDate", "Date",true,true,undefined,DateTimeFormatter));
-
         this.columns.push(new Column("type", "Type",true,true,<DropDownEditor options={type}/>));
         this.columns.push(new Column("status", "Status",true,true,<DropDownEditor options={status}/>));
         this.columns.push(new Column("linkedTask", "Linked Task",true,true,<DropDownEditor options={linkedTask}/>));
+        this.columns.push(new Column("rDate", "Date",true,true,undefined,DateTimeFormatter));
 
     }
 
@@ -118,13 +118,31 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
         let rows :Array<Row> = this.state.rows.slice();
 
         for (let i : number = e.fromRow; i <= e.toRow; i++) {
-          let rowToUpdate : Row = rows[i];
+          let rowToUpdate : Row = rows[i] as Row;
           let updatedRow : Row = update(rowToUpdate, {$merge: e.updated});
           rows[i]= updatedRow;
         }
 
         this.setState({ rows : rows });
       }
+
+      handleAddRow = (newRowIndex : any) => {
+        let type:string = ["Evaluation", "Prototype", "Initial-Batch",
+        "Serial-Release","Project Specific", "Stipulation"][0];
+       let status:string = ["Active", "Closed", "Removed"][0];
+       let date :Date = this.randomDate(new Date(2012, 0, 1), new Date());
+        let linkedTask : string = ["40 | Release 1.0 Prototype" , "100 | EoP" ,
+       "145 | v1.2 Stipulation" , "173 | Release 1.3 Prototype" , "189 | Initial-Batch"
+        , "203 | Release 1.3 Serial Release" , "226 | Release 1.4 Prototype"][0];
+       let rDate : string =  "10.10.2018";
+        const newRow: Row = new Row("" ,rDate , type , status ,linkedTask );
+        let rows : Array<Row> = this.state.rows.slice();
+        rows = update(rows, {$push: [newRow]});
+        this.setState({ rows });
+      }
+
+
+
       handleGridSort = (sortColumn : string, sortDirection : string): any => {
         const comparer : any = (a :any, b:any) => {
           if (sortDirection === "ASC") {
@@ -149,6 +167,7 @@ interface IDateTimeProp {
 interface IDateTimeState {
     startDate : any;
 }
+
 class DateTimeFormatter extends React.Component<IDateTimeProp,IDateTimeState> {
     constructor(props : IDateTimeProp) {
         super(props);
@@ -160,14 +179,11 @@ class DateTimeFormatter extends React.Component<IDateTimeProp,IDateTimeState> {
     public handleChange(date : any): void {
         console.log(date);
 
-        // this.setState({
-        //   startDate: date
-        // });
     }
 
     render(): any {
-      return (<DatePicker selected={this.state.startDate} onChange={this.handleChange} />
+      return (
+          <DatePicker selected= {this.state.startDate} onChange={this.handleChange} />
       );
     }
 }
-

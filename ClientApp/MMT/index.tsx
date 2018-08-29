@@ -26,10 +26,14 @@ export default class MMT extends React.Component<any,IState> {
         return (
             <div>
                 <Auswahl collection = {this.projList} onAuswahl={this.callback}/>
+                <button align="left">Import all unlinked Milestones from Project Plan</button>
+                <button align="right">SAVE CHANGES</button>
+                {/* <link>Milestone History</link> */}
                 <br/>
-                {/* <button onClick={this.onClickEvent}> Show Me Selected Project</button> */}
                 {/* <div>{this.state.value}</div> */}
                   <OverView tasks={this.state.tasks}/>
+                  {/* <button onClick={this.onClickEvent}>Add Tasks</button> */}
+
             </div>
         );
     }
@@ -69,8 +73,7 @@ export default class MMT extends React.Component<any,IState> {
     }
 
     private filterTaskByProjectId(projectId: string): Array<Task> {
-      //  console.log("filterTaskByProjectId called ProjectId : " + projectId);
-      //  console.log(this.tasks.filter((t)=> t.projectId === projectId));
+
         return this.tasks.filter((t)=> t.projectId === projectId);
     }
 
