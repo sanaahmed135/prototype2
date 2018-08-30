@@ -4,7 +4,6 @@ import Column from "./models/Column";
 import Row from "./models/Row";
 import { IOverviewProps } from "./Interfaces/IOverview";
 import Task from "./models/task";
-// import BootstrapModel from "./models/Confirmation";
 import { parse } from "path";
 import update from "immutability-helper";
 import { Editors,Toolbar} from "react-data-grid-addons";
@@ -27,16 +26,13 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
 
     constructor(props: any, context: any) {
         super(props, context);
-        // this.rowDel = this.props.onRowDel;
-        // onCellEdit = (row, fieldName, value) => dispatch(updateCell({row, fieldName, value, ...this.props.table}));
         this.createColumns = this.createColumns.bind(this);
+        this.handleDeleteRow = this.handleDeleteRow.bind(this);
+
         this.createColumns();
         this.getRows=this.getRows.bind(this);
         this.handleChange = this.handleChange.bind(this);
         let originalRows : Array<Row>= this.getRows(this.props.tasks);
-
-//        let rows : Array<Row> = originalRows.slice(0);
-
         this.state = { rows: this.getRows(this.props.tasks),
                         originalRows : originalRows,
                         startDate : new Date(),
@@ -54,10 +50,15 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
                 columns={this.columns}
                 rowGetter={this.getRowbyIndex}
                 rowsCount={this.state.rows.length}
-                minHeight={500}
+                minHeight={400}
+                minColumnWidth={120}
                 onGridSort={this.handleGridSort}
                 toolbar={<Toolbar onAddRow={this.handleAddRow}/>}
-                // toolbar={<Toolbar onAddRow={this.handleAddRow}/>}
+                // toolbar={
+                //     <GroupedColumnsPanel groupBy={this.props.groupBy}
+                //     onColumnGroupAdded={this.handleAddRow}
+                //     onColumnGroupDeleted={this.handleDeleteRow}/>
+                // }
                 onGridRowsUpdated={this.handleGridRowsUpdated}
                 rowSelection={{
                     showCheckbox: true,
@@ -70,7 +71,7 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
                   }}
                 // onDelEvent={this.rowDel.bind(this)}
                 />
-                 <button onClick={this.handleDeleteRow(this.state.selectedIndexes)}>Delete Tasks</button>
+                 <button onClick={ this.handleDeleteRow}>Delete Tasks</button>
             </div>
             );
     }
@@ -95,16 +96,18 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
 
     public createColumns(): void {
 
-        let type:Array<string> = ["","Evaluation", "Prototype", "Initial-Batch", "Serial-Release","Project Specific", "Stipulation"];
+        let type:Array<string> = ["","Evaluation", "Prototype", "Initial-Batch",
+        "Serial-Release","Project Specific", "Stipulation"];
         let status:Array<string>  = ["","Active", "Closed", "Removed"];
-        // tslint:disable-next-line:max-line-length
-        let linkedTask : Array<string> = ["","40 | Release 1.0 Prototype" , "100 | EoP" , "145 | v1.2 Stipulation" , "173 | Release 1.3 Prototype" , "189 | Initial-Batch",  "203 | Release 1.3 Serial Release" , "226 | Release 1.4 Prototype"];
+        let linkedTask : Array<string> = ["","40 | Release 1.0 Prototype" , "100 | EoP" ,
+         "145 | v1.2 Stipulation" , "173 | Release 1.3 Prototype" , "189 | Initial-Batch",
+          "203 | Release 1.3 Serial Release" , "226 | Release 1.4 Prototype"];
         // this.columns.push(new Column("id", "ID"));
-        this.columns.push(new Column("task", "Name",true,true));
-        this.columns.push(new Column("type", "Type",true,true,<DropDownEditor options={type}/>));
-        this.columns.push(new Column("status", "Status",true,true,<DropDownEditor options={status}/>));
-        this.columns.push(new Column("linkedTask", "Linked Task",true,true,<DropDownEditor options={linkedTask}/>));
-        this.columns.push(new Column("rDate", "Date",true,true,undefined,DateTimeFormatter));
+        this.columns.push(new Column("task", "Name",true,true,true));
+        this.columns.push(new Column("type", "Type",true,true,true,<DropDownEditor options={type}/>));
+        this.columns.push(new Column("status", "Status",true,true,true,<DropDownEditor options={status}/>));
+        this.columns.push(new Column("linkedTask", "Linked Task",true,true,true,<DropDownEditor options={linkedTask}/>));
+        this.columns.push(new Column("rDate", "Date",true,true,true,undefined,DateTimeFormatter));
         // this.columns.push(new Column("delete","Delete",undefined,undefined,undefined,
         // <Button type="button" bsStyle="danger" bsSize="xsmall" title="Delete"
         //  onClick={this.handleDeleteRow.bind(this)}>x</Button>));
@@ -173,14 +176,12 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
       }
 
       handleDeleteRow=():any => {
-        let indexes :any =this.state.selectedIndexes;
-        let rows : Array<Row> = this.state.rows.slice();
+
         for (let RowIndex of this.state.selectedIndexes) {
             this.state.rows.splice(RowIndex, 1);
          }
 
-        rows = rows.filter(row => row !==indexes);
-        this.setState({ rows,selectedIndexes: null });
+        this.setState({ rows : this.state.rows ,selectedIndexes: new Array<number>() });
       }
 
       handleGridSort = (sortColumn : string, sortDirection : string): any => {
