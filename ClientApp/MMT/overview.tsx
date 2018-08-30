@@ -4,9 +4,11 @@ import Column from "./models/Column";
 import Row from "./models/Row";
 import { IOverviewProps } from "./Interfaces/IOverview";
 import Task from "./models/task";
+// import BootstrapModel from "./models/Confirmation";
 import { parse } from "path";
 import update from "immutability-helper";
 import { Editors,Toolbar} from "react-data-grid-addons";
+import {Button} from "react-bootstrap";
 const { AutoComplete: AutoCompleteEditor, DropDownEditor } = Editors;
 import moment from "moment";
 import DatePicker from "react-datepicker";
@@ -16,6 +18,7 @@ interface IMyState {
     rows: Array<Row> ;
     originalRows : Array<Row>;
     startDate : any;
+    selectedIndexes : Array<number>;
 }
 
 export default class Overview extends React.Component<IOverviewProps, IMyState> {
@@ -24,7 +27,8 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
 
     constructor(props: any, context: any) {
         super(props, context);
-
+        // this.rowDel = this.props.onRowDel;
+        // onCellEdit = (row, fieldName, value) => dispatch(updateCell({row, fieldName, value, ...this.props.table}));
         this.createColumns = this.createColumns.bind(this);
         this.createColumns();
         this.getRows=this.getRows.bind(this);
@@ -35,7 +39,8 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
 
         this.state = { rows: this.getRows(this.props.tasks),
                         originalRows : originalRows,
-                        startDate : new Date()
+                        startDate : new Date(),
+                        selectedIndexes : Array<number>
                      };
     }
 
@@ -44,6 +49,7 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
         return(
             <div>
             <ReactGrid
+                // cellEdit={this.cellEdit}
                 enableCellSelect={true}
                 columns={this.columns}
                 rowGetter={this.getRowbyIndex}
@@ -51,12 +57,33 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
                 minHeight={500}
                 onGridSort={this.handleGridSort}
                 toolbar={<Toolbar onAddRow={this.handleAddRow}/>}
+                // toolbar={<Toolbar onAddRow={this.handleAddRow}/>}
                 onGridRowsUpdated={this.handleGridRowsUpdated}
+                rowSelection={{
+                    showCheckbox: true,
+                    enableShiftSelect: true,
+                    onRowsSelected: this.onRowsSelected,
+                    onRowsDeselected: this.onRowsDeselected,
+                    selectBy: {
+                      indexes: this.state.selectedIndexes
+                    }
+                  }}
+                // onDelEvent={this.rowDel.bind(this)}
                 />
-                {/* <button >Add Tasks</button> */}
+                 <button onClick={this.handleDeleteRow(this.state.selectedIndexes)}>Delete Tasks</button>
             </div>
             );
     }
+    onRowsSelected = (rows : Array<Row>) => {
+        this.setState({selectedIndexes: this.state.selectedIndexes.concat(rows.map(r => r.rowIdx))});
+        console.log(rows);
+      }
+
+      onRowsDeselected = (rows : Array<Row>) => {
+        let rowIndexes : Array<number> = rows.map(r => r.rowIdx);
+        this.setState({selectedIndexes: this.state.selectedIndexes.filter(i => rowIndexes.indexOf(i) === -1 )});
+      }
+
 
     public componentWillReceiveProps (newProps : IOverviewProps): void {
         this.setState({ rows : this.getRows(newProps.tasks) });
@@ -68,17 +95,19 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
 
     public createColumns(): void {
 
-        let type:Array<string> = ["Evaluation", "Prototype", "Initial-Batch", "Serial-Release","Project Specific", "Stipulation"];
-        let status:Array<string>  = ["Active", "Closed", "Removed"];
+        let type:Array<string> = ["","Evaluation", "Prototype", "Initial-Batch", "Serial-Release","Project Specific", "Stipulation"];
+        let status:Array<string>  = ["","Active", "Closed", "Removed"];
         // tslint:disable-next-line:max-line-length
-        let linkedTask : Array<string> = ["40 | Release 1.0 Prototype" , "100 | EoP" , "145 | v1.2 Stipulation" , "173 | Release 1.3 Prototype" , "189 | Initial-Batch",  "203 | Release 1.3 Serial Release" , "226 | Release 1.4 Prototype"];
+        let linkedTask : Array<string> = ["","40 | Release 1.0 Prototype" , "100 | EoP" , "145 | v1.2 Stipulation" , "173 | Release 1.3 Prototype" , "189 | Initial-Batch",  "203 | Release 1.3 Serial Release" , "226 | Release 1.4 Prototype"];
         // this.columns.push(new Column("id", "ID"));
         this.columns.push(new Column("task", "Name",true,true));
         this.columns.push(new Column("type", "Type",true,true,<DropDownEditor options={type}/>));
         this.columns.push(new Column("status", "Status",true,true,<DropDownEditor options={status}/>));
         this.columns.push(new Column("linkedTask", "Linked Task",true,true,<DropDownEditor options={linkedTask}/>));
         this.columns.push(new Column("rDate", "Date",true,true,undefined,DateTimeFormatter));
-
+        // this.columns.push(new Column("delete","Delete",undefined,undefined,undefined,
+        // <Button type="button" bsStyle="danger" bsSize="xsmall" title="Delete"
+        //  onClick={this.handleDeleteRow.bind(this)}>x</Button>));
     }
 
     public handleChange(date : any): void {
@@ -116,32 +145,43 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
 
     public handleGridRowsUpdated = (e : ReactGrid.GridRowsUpdatedEvent ): void => {
         let rows :Array<Row> = this.state.rows.slice();
-
         for (let i : number = e.fromRow; i <= e.toRow; i++) {
           let rowToUpdate : Row = rows[i] as Row;
+        //   rowToUpdate.backgroundColor="red";
           let updatedRow : Row = update(rowToUpdate, {$merge: e.updated});
+          // rowToUpdate.style.backgroundColor=(rowToUpdate.style.backgroundColor==="red")?("transparent"):("red");
           rows[i]= updatedRow;
         }
 
         this.setState({ rows : rows });
+
       }
 
       handleAddRow = (newRowIndex : any) => {
-        let type:string = ["Evaluation", "Prototype", "Initial-Batch",
+        let type:string = ["","Evaluation", "Prototype", "Initial-Batch",
         "Serial-Release","Project Specific", "Stipulation"][0];
-       let status:string = ["Active", "Closed", "Removed"][0];
+       let status:string = ["","Active", "Closed", "Removed"][0];
        let date :Date = this.randomDate(new Date(2012, 0, 1), new Date());
-        let linkedTask : string = ["40 | Release 1.0 Prototype" , "100 | EoP" ,
+        let linkedTask : string = ["","40 | Release 1.0 Prototype" , "100 | EoP" ,
        "145 | v1.2 Stipulation" , "173 | Release 1.3 Prototype" , "189 | Initial-Batch"
         , "203 | Release 1.3 Serial Release" , "226 | Release 1.4 Prototype"][0];
        let rDate : string =  "10.10.2018";
         const newRow: Row = new Row("" ,rDate , type , status ,linkedTask );
         let rows : Array<Row> = this.state.rows.slice();
-        rows = update(rows, {$push: [newRow]});
+        rows = update(rows, {$push : [newRow]});
         this.setState({ rows });
       }
 
+      handleDeleteRow=():any => {
+        let indexes :any =this.state.selectedIndexes;
+        let rows : Array<Row> = this.state.rows.slice();
+        for (let RowIndex of this.state.selectedIndexes) {
+            this.state.rows.splice(RowIndex, 1);
+         }
 
+        rows = rows.filter(row => row !==indexes);
+        this.setState({ rows,selectedIndexes: null });
+      }
 
       handleGridSort = (sortColumn : string, sortDirection : string): any => {
         const comparer : any = (a :any, b:any) => {
@@ -153,7 +193,6 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
         };
 
         const rows :Array<Row> = sortDirection === "NONE" ? this.state.originalRows.slice(0) : this.state.rows.sort(comparer);
-
         this.setState({ rows });
       }
 }

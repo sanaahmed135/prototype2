@@ -26,18 +26,23 @@ export default class MMT extends React.Component<any,IState> {
         return (
             <div>
                 <Auswahl collection = {this.projList} onAuswahl={this.callback}/>
-                <button align="left">Import all unlinked Milestones from Project Plan</button>
-                <button align="right">SAVE CHANGES</button>
+                <button >Import all unlinked Milestones from Project Plan</button>
+                <button >SAVE CHANGES</button>
                 {/* <link>Milestone History</link> */}
                 <br/>
                 {/* <div>{this.state.value}</div> */}
+                  {/* <OverView tasks={this.state.tasks} onRowDel={this.handleRowDel.bind(this)}/> */}
                   <OverView tasks={this.state.tasks}/>
                   {/* <button onClick={this.onClickEvent}>Add Tasks</button> */}
 
             </div>
         );
     }
-
+    // handleRowDel(rowId : number): void {
+    //     var index : number = this.state.rows.indexOf(rowId);
+    //     this.state.rowId.splice(index, 1);
+    //     this.setState({rows});
+    //   }
     private getProjects(): Array<Project> {
         let collection : Array<Project> = new Array<Project>();
         collection.push(new Project("1","Proj1"));
