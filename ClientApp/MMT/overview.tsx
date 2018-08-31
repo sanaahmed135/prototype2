@@ -82,7 +82,8 @@ import "react-datepicker/dist/react-datepicker.css";
                     onRowsSelected: this.onRowsSelected,
                     onRowsDeselected: this.onRowsDeselected,
                     selectBy: {
-                      indexes: this.state.selectedIndexes
+                       indexes: this.state.selectedIndexes
+                    //    selectedId : this.state.rows.id
                     }
                   }}
                 // onDelEvent={this.rowDel.bind(this)}
@@ -249,13 +250,9 @@ import "react-datepicker/dist/react-datepicker.css";
       }
 
       handleDeleteRow=():any => {
-
-        for (let RowIndex of this.state.selectedIndexes) {
-            this.state.rows.splice(RowIndex, 1);
-            this.setState({ rows : this.state.rows ,selectedIndexes: new Array<number>() });
-         }
-
-
+        let newRows :Array<row> =this.state.rows.filter((d,i)=>
+         this.state.selectedIndexes.indexOf(i)<0);
+        this.setState({ rows : newRows ,selectedIndexes: new Array<number>() });
       }
 
       handleGridSort = (sortColumn : string, sortDirection : string): any => {
