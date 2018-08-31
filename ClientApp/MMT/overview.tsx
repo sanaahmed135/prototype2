@@ -48,8 +48,7 @@ import "react-datepicker/dist/react-datepicker.css";
             this.createColumns();
             this.getRows=this.getRows.bind(this);
             this.handleChange = this.handleChange.bind(this);
-            // private rows : Array<ReactDataGrid.Row> = new Array<ReactDataGrid.Row>();
-            let originalRows : ReactGrid.Row[]= this.getRows(this.props.tasks);
+            let originalRows : Array<Row>= this.getRows(this.props.tasks);
             this.state = { rows: this.getRows(this.props.tasks),
                             originalRows : originalRows,
                             startDate : new Date(),
@@ -113,9 +112,9 @@ import "react-datepicker/dist/react-datepicker.css";
         return this.state.rows[index];
     }
 
-    col:ReactGrid.Column[];
+    // col:ReactDataGrid.Column[];
 
-    createColumns(): ReactGrid.Column[] {
+    public createColumns(): ReactGrid.Column[] {
 
         let type:Array<string> = ["","Evaluation", "Prototype", "Initial-Batch",
         "Serial-Release","Project Specific", "Stipulation"];
@@ -196,7 +195,7 @@ import "react-datepicker/dist/react-datepicker.css";
     }
 
     public getRows(tasks : Array<Task>): Array<Row>  {
-        let rows: ReactGrid.Row[] = new ReactGrid.Row[]();
+        let rows: Array<Row>  = new Array<Row> ();
 
         for (let id: number = 0; id < tasks.length; id++) {
 
@@ -223,7 +222,7 @@ import "react-datepicker/dist/react-datepicker.css";
     }
 
     public handleGridRowsUpdated = (e : ReactGrid.GridRowsUpdatedEvent ): void => {
-        let rows :ReactGrid.Row[] = this.state.rows.slice();
+        let rows :Array<Row> = this.state.rows.slice();
         for (let i : number = e.fromRow; i <= e.toRow; i++) {
           let rowToUpdate : Row = rows[i] as Row;
           let updatedRow : Row = update(rowToUpdate, {$merge: e.updated});
@@ -243,8 +242,8 @@ import "react-datepicker/dist/react-datepicker.css";
        "145 | v1.2 Stipulation" , "173 | Release 1.3 Prototype" , "189 | Initial-Batch"
         , "203 | Release 1.3 Serial Release" , "226 | Release 1.4 Prototype"][0];
        let rDate : string =  "10.10.2018";
-        const newRow: ReactGrid.Row = new ReactGrid.Row("" ,rDate , type , status ,linkedTask );
-        let rows : ReactGrid.Row[] = this.state.rows.slice();
+        const newRow: Row = new Row("" ,rDate , type , status ,linkedTask );
+        let rows : Array<Row> = this.state.rows.slice();
         rows = update(rows, {$push : [newRow]});
         this.setState({ rows });
       }
@@ -253,9 +252,10 @@ import "react-datepicker/dist/react-datepicker.css";
 
         for (let RowIndex of this.state.selectedIndexes) {
             this.state.rows.splice(RowIndex, 1);
+            this.setState({ rows : this.state.rows ,selectedIndexes: new Array<number>() });
          }
 
-        this.setState({ rows : this.state.rows ,selectedIndexes: new Array<number>() });
+
       }
 
       handleGridSort = (sortColumn : string, sortDirection : string): any => {
@@ -267,7 +267,7 @@ import "react-datepicker/dist/react-datepicker.css";
           }
         };
 
-        const rows :ReactGrid.Row[] = sortDirection === "NONE" ? this.state.originalRows.slice(0) : this.state.rows.sort(comparer);
+        const rows :Array<Row> = sortDirection === "NONE" ? this.state.originalRows.slice(0) : this.state.rows.sort(comparer);
         this.setState({ rows });
       }
 }
