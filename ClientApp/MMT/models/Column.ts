@@ -1,6 +1,7 @@
 export default class Column {
     key: string;
     name : string;
+    // formatter: any;
     editable? : boolean;
     sortable? :boolean;
     editor? :JSX.Element;
@@ -8,8 +9,7 @@ export default class Column {
     delete? : JSX.Element;
     resizable?:boolean;
 
-
-    constructor(_key: string , _name : string,,_resizable : boolean,_sortable? : boolean,
+    constructor(_key: string , _name : string,_resizable? : boolean,_sortable? : boolean,
          _editable? : boolean,_editor? : JSX.Element ,_formatter? : any,
         _delete? :JSX.Element) {
         this.key = _key;

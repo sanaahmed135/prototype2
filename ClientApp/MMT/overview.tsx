@@ -12,32 +12,49 @@ const { AutoComplete: AutoCompleteEditor, DropDownEditor } = Editors;
 import moment from "moment";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+// https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/react-data-grid/react-data-grid-tests.tsx
+    interface IMyState {
+        rows: Array<Row> ;
+        originalRows : Array<Row>;
+        startDate : any;
+        selectedIndexes : Array<number>;
+    }
 
-interface IMyState {
-    rows: Array<Row> ;
-    originalRows : Array<Row>;
-    startDate : any;
-    selectedIndexes : Array<number>;
-}
+    // export class PercentCompleteFormatter extends React.Component {
+    //     static propTypes = {
+    //     value: PropTypes.number.isRequired
+    //     };
+    //     public render(): any {
+    //     const percentComplete : any = this.props.value + "%";
+    //     return (
+    //         <div className="progress" style={{marginTop: "20px"}}>
+    //         <div className="progress-bar" role="progressbar" aria-valuenow="60"
+    //         aria-valuemin="0" aria-valuemax="100" style={{width: percentComplete}}>
+    //             {percentComplete}
+    //         </div>
+    //         </div>);
+    //     }
+    // }
 
-export default class Overview extends React.Component<IOverviewProps, IMyState> {
-    private columns: Array<Column> = new Array<Column> ();
-    private mydate : any = new Date();
+    export default class Overview extends React.Component<IOverviewProps, IMyState> {
+        private columns: Array<Column> = new Array<Column>();
+        private mydate : any = new Date();
 
-    constructor(props: any, context: any) {
-        super(props, context);
-        this.createColumns = this.createColumns.bind(this);
-        this.handleDeleteRow = this.handleDeleteRow.bind(this);
+        constructor(props: any, context: any) {
+            super(props, context);
+            this.createColumns = this.createColumns.bind(this);
+            this.handleDeleteRow = this.handleDeleteRow.bind(this);
 
-        this.createColumns();
-        this.getRows=this.getRows.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-        let originalRows : Array<Row>= this.getRows(this.props.tasks);
-        this.state = { rows: this.getRows(this.props.tasks),
-                        originalRows : originalRows,
-                        startDate : new Date(),
-                        selectedIndexes : Array<number>
-                     };
+            this.createColumns();
+            this.getRows=this.getRows.bind(this);
+            this.handleChange = this.handleChange.bind(this);
+            // private rows : Array<ReactDataGrid.Row> = new Array<ReactDataGrid.Row>();
+            let originalRows : ReactGrid.Row[]= this.getRows(this.props.tasks);
+            this.state = { rows: this.getRows(this.props.tasks),
+                            originalRows : originalRows,
+                            startDate : new Date(),
+                            selectedIndexes : Array<number>
+                        };
     }
 
     render(): any {
@@ -51,7 +68,7 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
                 rowGetter={this.getRowbyIndex}
                 rowsCount={this.state.rows.length}
                 minHeight={400}
-                minColumnWidth={120}
+                minColumnWidth={10}
                 onGridSort={this.handleGridSort}
                 toolbar={<Toolbar onAddRow={this.handleAddRow}/>}
                 // toolbar={
@@ -75,8 +92,10 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
             </div>
             );
     }
+
     onRowsSelected = (rows : Array<Row>) => {
-        this.setState({selectedIndexes: this.state.selectedIndexes.concat(rows.map(r => r.rowIdx))});
+        let rowIndexes : Array<number> = rows.map(r => r.rowIdx);
+        this.setState({selectedIndexes: this.state.selectedIndexes.concat(rowIndexes)});
         console.log(rows);
       }
 
@@ -94,7 +113,9 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
         return this.state.rows[index];
     }
 
-    public createColumns(): void {
+    col:ReactGrid.Column[];
+
+    createColumns(): ReactGrid.Column[] {
 
         let type:Array<string> = ["","Evaluation", "Prototype", "Initial-Batch",
         "Serial-Release","Project Specific", "Stipulation"];
@@ -102,25 +123,80 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
         let linkedTask : Array<string> = ["","40 | Release 1.0 Prototype" , "100 | EoP" ,
          "145 | v1.2 Stipulation" , "173 | Release 1.3 Prototype" , "189 | Initial-Batch",
           "203 | Release 1.3 Serial Release" , "226 | Release 1.4 Prototype"];
-        // this.columns.push(new Column("id", "ID"));
-        this.columns.push(new Column("task", "Name",true,true,true));
-        this.columns.push(new Column("type", "Type",true,true,true,<DropDownEditor options={type}/>));
-        this.columns.push(new Column("status", "Status",true,true,true,<DropDownEditor options={status}/>));
-        this.columns.push(new Column("linkedTask", "Linked Task",true,true,true,<DropDownEditor options={linkedTask}/>));
-        this.columns.push(new Column("rDate", "Date",true,true,true,undefined,DateTimeFormatter));
-        // this.columns.push(new Column("delete","Delete",undefined,undefined,undefined,
-        // <Button type="button" bsStyle="danger" bsSize="xsmall" title="Delete"
-        //  onClick={this.handleDeleteRow.bind(this)}>x</Button>));
+
+        this.columns= [
+          {
+            key: "task",
+            name: "Name",
+            editable: true,
+            resizable: true
+          },
+          {
+            key: "type",
+            name: "Type",
+            editor: <DropDownEditor options={type}/>,
+            editable: true,
+            resizable: true
+          },
+          {
+            key: "status",
+            name: "Status",
+            editor: <DropDownEditor options={status}/>,
+            editable: true,
+            resizable: true
+          },
+          {
+            key: "linkedTask",
+            name: "Linked Task",
+            editor: <DropDownEditor options={linkedTask}/>,
+            editable: true,
+            resizable: true,
+          },
+          {
+            key: "rDate",
+            name: "Date",
+            formatter: DateTimeFormatter,
+            editable: true,
+            resizable: true
+          }
+        //   {
+        //     key: "delete",
+        //     name: "Delete",
+        //     formatter: DateTimeFormatter,
+        //     editable: true,
+        //     resizable: true
+        //   }
+        ];
+
     }
 
+    // public createColumns(): void {
+
+    //     let type:Array<string> = ["","Evaluation", "Prototype", "Initial-Batch",
+    //     "Serial-Release","Project Specific", "Stipulation"];
+    //     let status:Array<string>  = ["","Active", "Closed", "Removed"];
+    //     let linkedTask : Array<string> = ["","40 | Release 1.0 Prototype" , "100 | EoP" ,
+    //      "145 | v1.2 Stipulation" , "173 | Release 1.3 Prototype" , "189 | Initial-Batch",
+    //       "203 | Release 1.3 Serial Release" , "226 | Release 1.4 Prototype"];
+    //     // this.columns.push(new Column("id", "ID"));
+    //     this.columns.push(new Column("task", "Name",true,true,true));
+    //     this.columns.push(new Column("type", "Type",true,true,true,<DropDownEditor options={type}/>));
+    //     this.columns.push(new Column("status", "Status",true,true,true,<DropDownEditor options={status}/>));
+    //     this.columns.push(new Column("linkedTask", "Linked Task",true,true,true,<DropDownEditor options={linkedTask}/>));
+    //     this.columns.push(new Column("rDate", "Date",true,true,true,undefined,DateTimeFormatter));
+    //     // this.columns.push(new Column("delete","Delete",undefined,undefined,undefined,
+    //     // <Button type="button" bsStyle="danger" bsSize="xsmall" title="Delete"
+    //     //  onClick={this.handleDeleteRow.bind(this)}>x</Button>));
+    // }
+
     public handleChange(date : any): void {
-       console.log(date);
         this.setState({
             startDate: date
         });
     }
+
     public getRows(tasks : Array<Task>): Array<Row>  {
-        let rows: Array<Row>  = new Array<Row> ();
+        let rows: ReactGrid.Row[] = new ReactGrid.Row[]();
 
         for (let id: number = 0; id < tasks.length; id++) {
 
@@ -147,12 +223,10 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
     }
 
     public handleGridRowsUpdated = (e : ReactGrid.GridRowsUpdatedEvent ): void => {
-        let rows :Array<Row> = this.state.rows.slice();
+        let rows :ReactGrid.Row[] = this.state.rows.slice();
         for (let i : number = e.fromRow; i <= e.toRow; i++) {
           let rowToUpdate : Row = rows[i] as Row;
-        //   rowToUpdate.backgroundColor="red";
           let updatedRow : Row = update(rowToUpdate, {$merge: e.updated});
-          // rowToUpdate.style.backgroundColor=(rowToUpdate.style.backgroundColor==="red")?("transparent"):("red");
           rows[i]= updatedRow;
         }
 
@@ -169,8 +243,8 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
        "145 | v1.2 Stipulation" , "173 | Release 1.3 Prototype" , "189 | Initial-Batch"
         , "203 | Release 1.3 Serial Release" , "226 | Release 1.4 Prototype"][0];
        let rDate : string =  "10.10.2018";
-        const newRow: Row = new Row("" ,rDate , type , status ,linkedTask );
-        let rows : Array<Row> = this.state.rows.slice();
+        const newRow: ReactGrid.Row = new ReactGrid.Row("" ,rDate , type , status ,linkedTask );
+        let rows : ReactGrid.Row[] = this.state.rows.slice();
         rows = update(rows, {$push : [newRow]});
         this.setState({ rows });
       }
@@ -193,7 +267,7 @@ export default class Overview extends React.Component<IOverviewProps, IMyState> 
           }
         };
 
-        const rows :Array<Row> = sortDirection === "NONE" ? this.state.originalRows.slice(0) : this.state.rows.sort(comparer);
+        const rows :ReactGrid.Row[] = sortDirection === "NONE" ? this.state.originalRows.slice(0) : this.state.rows.sort(comparer);
         this.setState({ rows });
       }
 }
