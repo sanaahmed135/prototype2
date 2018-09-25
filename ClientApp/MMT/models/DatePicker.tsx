@@ -31,26 +31,26 @@ const DayPickerStrings: IDatePickerStrings = {
 };
 
 export interface IDatePickerBasicState {
-    firstDayOfWeek?: DayOfWeek;
-    value?: Date | null;
+  firstDayOfWeek?: DayOfWeek;
+  value?: Date | null;
 }
 
 export default class DatePickerBasic extends React.Component<{}, IDatePickerBasicState> {
   public constructor(props: {}) {
     super(props);
-    let today : Date = new Date(),
-    value : Date = new Date(today.getFullYear(),(today.getMonth() + 1),today.getDate());
+    let today: Date = new Date(),
+      value: Date = new Date(today.getFullYear(), (today.getMonth() + 1), today.getDate());
     this.state = {
       firstDayOfWeek: DayOfWeek.Sunday,
       value: value
     };
   }
 
-  public render():  JSX.Element {
+  public render(): JSX.Element {
     const { firstDayOfWeek, value } = this.state;
-    const desc : string = "This field is required. One of the support input formats is year dash month dash day.";
+    const desc: string = "This field is required. One of the support input formats is year dash month dash day.";
     return (
-        <DatePicker
+      <DatePicker
         isRequired={false}
         allowTextInput={true}
         ariaLabel={desc}
@@ -62,25 +62,28 @@ export default class DatePickerBasic extends React.Component<{}, IDatePickerBasi
         parseDateFromString={this._onParseDateFromString}
       />
     );
-    private _onSelectDate = (date: Date | null | undefined): void => {
-        this.setState({ value: date });
-    }
-
-      private _onFormatDate = (date: Date): string => {
-        return date.getDate() + "." + (date.getMonth() + 1) + "." + (date.getFullYear() % 100);
-      }
-
-      private _onParseDateFromString = (value: string): Date => {
-        const date : Date = this.state.value || new Date();
-        const values: string[] = (value || "").trim().split(".");
-        const day : number = values.length > 0 ? Math.max(1, Math.min(31, parseInt(values[0], 10))) : date.getDate();
-        const month : number = values.length > 1 ? Math.max(1, Math.min(12, parseInt(values[1], 10))) - 1 : date.getMonth();
-        let year:number = values.length > 2 ? parseInt(values[2], 10) : date.getFullYear();
-        if (year < 100) {
-          year += date.getFullYear() - (date.getFullYear() % 100);
-        }
-        return new Date(year, month, day);
-      }
+  }
+  private _onSelectDate = (date: Date | null | undefined): void => {
+    this.setState({ value: date });
   }
 
+  private _onFormatDate = (date?: Date): string => {
+    if (date === undefined) {
+      return "";
+    } else {
+      return date.getDate() + "." + (date.getMonth() + 1) + "." + (date.getFullYear() % 100);
+    }
+  }
+
+  private _onParseDateFromString = (value: string): Date => {
+    const date: Date = this.state.value || new Date();
+    const values: string[] = (value || "").trim().split(".");
+    const day: number = values.length > 0 ? Math.max(1, Math.min(31, parseInt(values[0], 10))) : date.getDate();
+    const month: number = values.length > 1 ? Math.max(1, Math.min(12, parseInt(values[1], 10))) - 1 : date.getMonth();
+    let year: number = values.length > 2 ? parseInt(values[2], 10) : date.getFullYear();
+    if (year < 100) {
+      year += date.getFullYear() - (date.getFullYear() % 100);
+    }
+    return new Date(year, month, day);
+  }
 }

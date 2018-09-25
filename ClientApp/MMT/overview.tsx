@@ -1,9 +1,9 @@
 ﻿import * as React from "react";
 import ReactGrid from "react-data-grid";
 import Column from "./models/Column";
-import Row from "./models/Row";
+import RowModel from "./models/RowModel";
 import { IOverviewProps } from "./Interfaces/IOverview";
-import Task from "./models/task";
+import TaskModel from "./models/TaskModel";
 import { parse } from "path";
 import update from "immutability-helper";
 import { Editors,Toolbar} from "react-data-grid-addons";
@@ -11,18 +11,17 @@ import {Button} from "react-bootstrap";
 const { AutoComplete: AutoCompleteEditor, DropDownEditor } = Editors;
 import moment from "moment";
 import DatePickerBasic from "./models/DatePicker";
-// import DatePicker from "react-datepicker";
-// import "react-datepicker/dist/react-datepicker.css";
-
-
-
+import ChangedCellFormater from './ChangedCellFormater';
 
 // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/react-data-grid/react-data-grid-tests.tsx
     interface IMyState {
-        rows: Array<Row> ;
-        originalRows : Array<Row>;
+        rows: ReadonlyArray<RowModel> ;
+        originalRows : Array<RowModel>;
         startDate : any;
         selectedIndexes : Array<number>;
+        fromRow: number;
+        toRow: number;
+        cellUpdateCss : string;
     }
 
     export default class Overview extends React.Component<IOverviewProps, IMyState> {
@@ -37,20 +36,23 @@ import DatePickerBasic from "./models/DatePicker";
             this.createColumns();
             this.getRows=this.getRows.bind(this);
             this.handleChange = this.handleChange.bind(this);
-            let originalRows : Array<Row>= this.getRows(this.props.tasks);
+            let originalRows : Array<RowModel>= this.getRows(this.props.tasks);
             this.state = { rows: this.getRows(this.props.tasks),
                             originalRows : originalRows,
                             startDate : new Date(),
-                            selectedIndexes : Array<number>
+                            selectedIndexes : new Array<number>(),
+                            fromRow:0,
+                            toRow:0,
+                            cellUpdateCss: "red",
                         };
     }
 
     render(): any {
-
+        
+        /*ref={ node => this.grid = node }*/
         return(
             <div>
             <ReactGrid
-                ref={ node => this.grid = node }
                 rowKey="id"
                 // cellEdit={this.cellEdit}
                 enableCellSelect={true}
@@ -84,13 +86,13 @@ import DatePickerBasic from "./models/DatePicker";
             </div>
             );
     }
-    onRowsSelected = (rows : Array<Row>) => {
+    onRowsSelected = (rows : Array<AdazzleReactDataGrid.SelectionParams>) => {
         let rowIndexes : Array<number> = rows.map(r => r.rowIdx);
         this.setState({selectedIndexes: this.state.selectedIndexes.concat(rowIndexes)});
         console.log(rows);
       }
 
-      onRowsDeselected = (rows : Array<Row>) => {
+      onRowsDeselected = (rows : Array<AdazzleReactDataGrid.SelectionParams>) => {
         let rowIndexes : Array<number> = rows.map(r => r.rowIdx);
         this.setState({selectedIndexes: this.state.selectedIndexes.filter(i => rowIndexes.indexOf(i) === -1 )});
       }
@@ -100,7 +102,7 @@ import DatePickerBasic from "./models/DatePicker";
         this.setState({ rows : this.getRows(newProps.tasks) });
     }
 
-    public getRowbyIndex = (index: number): Row => {
+    public getRowbyIndex = (index: number): RowModel => {
         return this.state.rows[index];
     }
 
@@ -120,7 +122,8 @@ import DatePickerBasic from "./models/DatePicker";
             key: "task",
             name: "Name",
             editable: true,
-            resizable: true
+            resizable: true,
+            formatter: ChangedCellFormater
           },
           {
             key: "type",
@@ -186,8 +189,8 @@ import DatePickerBasic from "./models/DatePicker";
         });
     }
 
-    public getRows(tasks : Array<Task>): Array<Row>  {
-        let rows: Array<Row>  = new Array<Row> ();
+    public getRows(tasks : Array<TaskModel>): Array<RowModel>  {
+        let rows: Array<RowModel>  = new Array<RowModel> ();
 
         for (let id: number = 0; id < tasks.length; id++) {
 
@@ -198,9 +201,9 @@ import DatePickerBasic from "./models/DatePicker";
              let linkedTask : string = ["40 | Release 1.0 Prototype" , "100 | EoP" ,
             "145 | v1.2 Stipulation" , "173 | Release 1.3 Prototype" , "189 | Initial-Batch"
              , "203 | Release 1.3 Serial Release" , "226 | Release 1.4 Prototype"][Math.floor((Math.random() * 6) + 1)];
-            let task : Task  = tasks[id];
+            let task : TaskModel  = tasks[id];
             let rDate : string =  "10.10.2018";
-            const row: Row = new Row(task.name ,rDate , type , status ,linkedTask );
+            const row: RowModel = new RowModel(task.name ,rDate , type , status ,linkedTask );
 
             rows.push(row);
 
@@ -213,17 +216,24 @@ import DatePickerBasic from "./models/DatePicker";
     }
 
     public handleGridRowsUpdated = (e : ReactGrid.GridRowsUpdatedEvent ): void => {
-        let rows :Array<Row> = this.state.rows.slice();
+        let rows :Array<RowModel> = this.state.rows.slice();
         for (let i : number = e.fromRow; i <= e.toRow; i++) {
-          let rowToUpdate : Row = rows[i] as Row;
-          let updatedRow : Row = update(rowToUpdate, {$merge: e.updated});
+          let rowToUpdate : RowModel = rows[i] as RowModel;
+          let updatedRow : RowModel = update(rowToUpdate, {$merge: e.updated});
           rows[i]= updatedRow;
         }
 
-        this.setState({ rows : rows });
+        this.setState({ rows : rows ,fromRow: e.fromRow, toRow: e.toRow },()=> {
+            this.changeStyle();
+        });
 
       }
-
+      changeStyle = () => {
+        var all:any = document.getElementsByClassName("react-grid-Row");
+        for (let i :number = this.state.fromRow; i <= this.state.toRow; i++) {
+          all[i].style.color = this.state.cellUpdateCss;
+        }
+      }
       handleAddRow = (newRowIndex : any) => {
         let type:string = ["","Evaluation", "Prototype", "Initial-Batch",
         "Serial-Release","Project Specific", "Stipulation"][0];
@@ -233,14 +243,14 @@ import DatePickerBasic from "./models/DatePicker";
        "145 | v1.2 Stipulation" , "173 | Release 1.3 Prototype" , "189 | Initial-Batch"
         , "203 | Release 1.3 Serial Release" , "226 | Release 1.4 Prototype"][0];
        let rDate : string =  "10.10.2018";
-        const newRow: Row = new Row("" ,rDate , type , status ,linkedTask );
-        let rows : Array<Row> = this.state.rows.slice();
+        const newRow: RowModel = new RowModel("" ,rDate , type , status ,linkedTask );
+        let rows : ReadonlyArray<RowModel> = this.state.rows.slice();
         rows = update(rows, {$push : [newRow]});
         this.setState({ rows });
       }
 
       handleDeleteRow=():any => {
-        let newRows :Array<Row> =this.state.rows.filter((d,i)=>
+        let newRows :Array<RowModel> =this.state.rows.filter((d,i)=>
          this.state.selectedIndexes.indexOf(i)<0);
         this.setState({ rows : newRows ,selectedIndexes: new Array<number>() });
       }
@@ -254,7 +264,9 @@ import DatePickerBasic from "./models/DatePicker";
           }
         };
 
-        const rows :Array<Row> = sortDirection === "NONE" ? this.state.originalRows.slice(0) : this.state.rows.sort(comparer);
+        const rows :Array<RowModel> = ((sortDirection === "NONE")
+            ? this.state.originalRows.slice(0)
+            : this.state.rows.slice(0).sort(comparer));
         this.setState({ rows });
       }
 }

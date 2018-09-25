@@ -1,10 +1,11 @@
-import Task from "./task";
+import TaskModel from "./TaskModel";
 import moment from "moment";
 
 
-export default class Row {
+export default class RowModel {
     // id: number;
     task : string;
+    taskChanged : boolean;
     rDate :string;
     type : string;
     status : string;
@@ -18,5 +19,6 @@ export default class Row {
         this.type = _type;
         this.status = _status;
         this.linkedTask = _linkedTask;
+        this.taskChanged = false;
     }
 }
