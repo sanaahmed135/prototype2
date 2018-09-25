@@ -10,8 +10,13 @@ import { Editors,Toolbar} from "react-data-grid-addons";
 import {Button} from "react-bootstrap";
 const { AutoComplete: AutoCompleteEditor, DropDownEditor } = Editors;
 import moment from "moment";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import DatePickerBasic from "./models/DatePicker";
+// import DatePicker from "react-datepicker";
+// import "react-datepicker/dist/react-datepicker.css";
+
+
+
+
 // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/react-data-grid/react-data-grid-tests.tsx
     interface IMyState {
         rows: Array<Row> ;
@@ -19,22 +24,6 @@ import "react-datepicker/dist/react-datepicker.css";
         startDate : any;
         selectedIndexes : Array<number>;
     }
-
-    // export class PercentCompleteFormatter extends React.Component {
-    //     static propTypes = {
-    //     value: PropTypes.number.isRequired
-    //     };
-    //     public render(): any {
-    //     const percentComplete : any = this.props.value + "%";
-    //     return (
-    //         <div className="progress" style={{marginTop: "20px"}}>
-    //         <div className="progress-bar" role="progressbar" aria-valuenow="60"
-    //         aria-valuemin="0" aria-valuemax="100" style={{width: percentComplete}}>
-    //             {percentComplete}
-    //         </div>
-    //         </div>);
-    //     }
-    // }
 
     export default class Overview extends React.Component<IOverviewProps, IMyState> {
         private columns: Array<Column> = new Array<Column>();
@@ -61,6 +50,8 @@ import "react-datepicker/dist/react-datepicker.css";
         return(
             <div>
             <ReactGrid
+                ref={ node => this.grid = node }
+                rowKey="id"
                 // cellEdit={this.cellEdit}
                 enableCellSelect={true}
                 columns={this.columns}
@@ -75,6 +66,7 @@ import "react-datepicker/dist/react-datepicker.css";
                 //     onColumnGroupAdded={this.handleAddRow}
                 //     onColumnGroupDeleted={this.handleDeleteRow}/>
                 // }
+                enableRowSelect={true}
                 onGridRowsUpdated={this.handleGridRowsUpdated}
                 rowSelection={{
                     showCheckbox: true,
@@ -92,7 +84,6 @@ import "react-datepicker/dist/react-datepicker.css";
             </div>
             );
     }
-
     onRowsSelected = (rows : Array<Row>) => {
         let rowIndexes : Array<number> = rows.map(r => r.rowIdx);
         this.setState({selectedIndexes: this.state.selectedIndexes.concat(rowIndexes)});
@@ -115,8 +106,8 @@ import "react-datepicker/dist/react-datepicker.css";
 
     // col:ReactDataGrid.Column[];
 
-    public createColumns(): ReactGrid.Column[] {
-
+    // public createColumns(): ReactGrid.Column[] {
+        public createColumns(): void {
         let type:Array<string> = ["","Evaluation", "Prototype", "Initial-Batch",
         "Serial-Release","Project Specific", "Stipulation"];
         let status:Array<string>  = ["","Active", "Closed", "Removed"];
@@ -155,7 +146,7 @@ import "react-datepicker/dist/react-datepicker.css";
           {
             key: "rDate",
             name: "Date",
-            formatter: DateTimeFormatter,
+            formatter:<DatePickerBasic/>,
             editable: true,
             resizable: true
           }
@@ -189,7 +180,7 @@ import "react-datepicker/dist/react-datepicker.css";
     //     //  onClick={this.handleDeleteRow.bind(this)}>x</Button>));
     // }
 
-    public handleChange(date : any): void {
+    public handleChange(date : Date): void {
         this.setState({
             startDate: date
         });
@@ -209,7 +200,6 @@ import "react-datepicker/dist/react-datepicker.css";
              , "203 | Release 1.3 Serial Release" , "226 | Release 1.4 Prototype"][Math.floor((Math.random() * 6) + 1)];
             let task : Task  = tasks[id];
             let rDate : string =  "10.10.2018";
-
             const row: Row = new Row(task.name ,rDate , type , status ,linkedTask );
 
             rows.push(row);
@@ -250,7 +240,7 @@ import "react-datepicker/dist/react-datepicker.css";
       }
 
       handleDeleteRow=():any => {
-        let newRows :Array<row> =this.state.rows.filter((d,i)=>
+        let newRows :Array<Row> =this.state.rows.filter((d,i)=>
          this.state.selectedIndexes.indexOf(i)<0);
         this.setState({ rows : newRows ,selectedIndexes: new Array<number>() });
       }
@@ -277,24 +267,4 @@ interface IDateTimeProp {
 
 interface IDateTimeState {
     startDate : any;
-}
-
-class DateTimeFormatter extends React.Component<IDateTimeProp,IDateTimeState> {
-    constructor(props : IDateTimeProp) {
-        super(props);
-        this.handleChange = this.handleChange.bind(this);
-        console.log(this.props.value);
-        this.state = {startDate : moment(new Date(this.props.value),"MM/DD/YYYY")};
-    }
-
-    public handleChange(date : any): void {
-        console.log(date);
-
-    }
-
-    render(): any {
-      return (
-          <DatePicker selected= {this.state.startDate} onChange={this.handleChange} />
-      );
-    }
 }
